@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Игра Раскраска</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 50px;
+  }
+  #clickCounter {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+  table {
+    border-collapse: collapse;
+  }
+  td {
+    width: 50px;
+    height: 50px;
+    border: 1px solid #333;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  .red { background-color: red; }
+  .green { background-color: green; }
+  .blue { background-color: blue; }
+</style>
+</head>
+<body>
+
+<div id="clickCounter">Кликов: 0</div>
+
+<table id="colorGrid"></table>
+
+<script>
+  const colors = ['red', 'green', 'blue'];
+  const rows = 3;
+  const cols = 3;
+  let clickCount = 0;
+
+  const table = document.getElementById('colorGrid');
+  const counter = document.getElementById('clickCounter');
+
+  // Создание таблицы с случайными цветами
+  for (let r = 0; r < rows; r++) {
+    const tr = document.createElement('tr');
+    for (let c = 0; c < cols; c++) {
+      const td = document.createElement('td');
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      td.classList.add(color);
+      td.addEventListener('click', () => handleCellClick(td));
+      tr.appendChild(td);
+    }
+    table.appendChild(tr);
+  }
+
+  function handleCellClick(cell) {
+    // Меняем цвет на случайный другой
+    const currentColor = cell.classList[0];
+    let newColor;
+    do {
+      newColor = colors[Math.floor(Math.random() * colors.length)];
+    } while (newColor === currentColor);
+    cell.classList.replace(currentColor, newColor);
+
+    // Увеличиваем счетчик кликов
+    clickCount++;
+    counter.textContent = `Кликов: ${clickCount}`;
+
+    // Проверяем победу
+    checkVictory();
+  }
+
+  function checkVictory() {
+    const allCells = document.querySelectorAll('td');
+    const firstColor = allCells[0].classList[0];
+    const victory = Array.from(allCells).every(cell => cell.classList.contains(firstColor));
+    if (victory) {
+      setTimeout(() => alert(`Поздравляем! Победа за ${clickCount} кликов!`), 100);
+    }
+  }
+</script>
+
+</body>
+</html>

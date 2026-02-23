@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Календарь</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    margin-top: 50px;
+  }
+  .calendar {
+    width: 300px;
+    text-align: center;
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+  }
+  .day-name, .day {
+    padding: 5px;
+    border: 1px solid #ddd;
+  }
+  .navigation {
+    cursor: pointer;
+    font-weight: bold;
+  }
+</style>
+</head>
+<body>
+
+<div class="calendar">
+  <div class="header">
+    <span class="navigation" id="prevMonth">&#8592;</span>
+    <span id="monthYear"></span>
+    <span class="navigation" id="nextMonth">&#8594;</span>
+  </div>
+  <div class="days" id="dayNames">
+    <!-- Дни недели будут вставлены здесь -->
+  </div>
+  <div class="days" id="days">
+    <!-- Даты месяца будут вставлены здесь -->
+  </div>
+</div>
+
+<script>
+const dayNames = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+const monthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+
+let today = new Date();
+let currentMonth = today.getMonth();
+let currentYear = today.getFullYear();
+
+function updateCalendar() {
+  // Обновляем название месяца и года
+  document.getElementById('monthYear').textContent = `${monthNames[currentMonth]} ${currentYear}`;
+  
+  // Отображаем дни недели
+  const dayNamesContainer = document.getElementById('dayNames');
+  dayNamesContainer.innerHTML = '';
+  for (let day of dayNames) {
+    const div = document.createElement('div');
+    div.className = 'day-name';
+    div.textContent = day;
+    dayNamesContainer.appendChild(div);
+  }
+  
+  // Отображаем дни месяца
+  const daysContainer = document.getElementById('days');
+  daysContainer.innerHTML = '';
+  
+  const firstDay = new Date(currentYear, currentMonth, 1).getDay(); // 0 = Воскресенье
+  const lastDay = new Date(currentYear, currentMonth + 1, 0).getDate(); // Последний день месяца
+  
+  // Подгоняем первый день под Пн (нужно сдвинуть, если воскресенье)
+  let startDay = firstDay === 0 ? 6 : firstDay - 1;
+  
+  // Пустые ячейки до начала месяца
+  for (let i = 0; i < startDay; i++) {
+    const div = document.createElement('div');
+    div.className = 'day';
+    daysContainer.appendChild(div);
+  }
+  
+  for (let date = 1; date <= lastDay; date++) {
+    const div = document.createElement('div');
+    div.className = 'day';
+    div.textContent = date;
+    daysContainer.appendChild(div);
+  }
+}
+
+function changeMonth(direction) {
+  if (direction === 'next') {
+    if (currentMonth === 11) { // Декабрь
+      currentMonth = 0;
+      currentYear += 1;
+    } else {
+      currentMonth += 1;
+    }
+  } else if (direction === 'prev') {
+    if (currentMonth === 0) { // Январь
+      currentMonth = 11;
+      currentYear -= 1;
+    } else {
+      currentMonth -= 1;
+    }
+  }
+  updateCalendar();
+}
+
+document.getElementById('nextMonth').addEventListener('click', () => changeMonth('next'));
+document.getElementById('prevMonth').addEventListener('click', () => changeMonth('prev'));
+
+updateCalendar();
+</script>
+
+</body>
+</html>
